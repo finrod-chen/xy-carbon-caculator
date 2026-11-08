@@ -89,13 +89,22 @@ PR ──▶ CI 測試（Pint、Larastan、Pest：SQLite 與 MySQL）
 - nginx 監聽機器內 `:80`，也就是 Tunnel 的入口。
 - 初始化腳本由我寫進儲存庫（`deploy/bootstrap.sh`），你在機器上執行一次，並手動建立 `.env`（`APP_KEY` 由指令產生；初始管理員在安裝時互動輸入，不寫入任何檔案）。
 
-**機器上先驗證的項目**（依範本不同結果可能不同）：
-```bash
-docker --version && docker compose version
-df -h / /data            # 確認 Docker 資料放哪個磁碟
-nproc && free -m
-```
-若根磁碟空間偏小，Docker 的資料目錄需移到 `/data`。
+**機器實測結果（2026-11-08，以唯讀指令檢查機器 `main`）**
+
+| 項目 | 結果 | 影響 |
+|---|---|---|
+| 範本 | `agent-browser`（版本 2026-10-15.4） | 預裝 Docker 與 Compose |
+| 作業系統 | Debian 13 (trixie)，核心 6.18.54-instabox | 主機無 PHP，使用容器可行且需要 |
+| CPU／記憶體 | 4 vCPU／約 7.9 GiB（閒置時約用 470 MB） | 綽綽有餘 |
+| 磁碟 | 根碟 16 GB（已用 4.1 GB，可用 11 GB）；資料碟 `/data` 20 GB（幾乎全空） | 程式、資料、備份放 `/data`；Docker 映像在根碟 `/var/lib/docker`，約 11 GB 可用，足夠，但須監控 |
+| Docker | 29.8.2；Compose v5.6.0；儲存驅動 overlayfs | 可用 |
+| Node | v22.23.3 | 主機不需要，CI 建置 |
+| cloudflared | 版本 2026.10.7，systemd 服務 `active` | 與 Tunnel 已連線一致 |
+| 使用者與權限 | 登入使用者為 `user`，可無密碼 sudo | 可安裝與設定服務 |
+| 監聽埠 | 目前沒有服務監聽 80（先前測試頁已停止） | 之後由 nginx 容器接手 |
+| 運行設定 | 閒置暫停 1800 秒、`maxRunMinutes` 目前 120（免費方案的動態時間窗）、無冷卻 | 與文件描述一致 |
+
+結論：第 5 節的假設成立，不需調整結構。唯一需要留意：Docker 映像放根碟，部署與清理要避免映像累積（部署腳本定期執行 `docker image prune`）。
 
 ## 6. GitHub 與 Instabox 設定（由你執行）
 
@@ -143,6 +152,5 @@ nproc && free -m
 ## 10. 待你確認
 
 1. 外部保活機制的做法（呼叫哪個介面？是否使用活動租約或 `exec`？），以便我評估是否會與部署衝突或延長運行時間窗。
-2. 機器上 `docker --version`、`df -h / /data` 的輸出（驗證第 5 節的假設）。
 3. 想用 GitHub 提供的執行器做測試（建議），還是要先驗證 `instabox-medium` 再切換？
 4. 部署通知：失敗時要不要通知你？（可用 GitHub 的內建通知；其他管道另議。）
