@@ -23,7 +23,7 @@
 | 圖表 | Chart.js（npm 安裝後由 Vite 打包） | 不使用 CDN，內網可用 |
 | 認證 | Laravel Breeze（Blade 版）精簡後使用 | 移除公開註冊，帳號由管理員建立 |
 | 授權 | Policy + Gate，角色用欄位與列舉 | 不引入權限套件，規模不需要 |
-| 數值運算 | bcmath（或 brick/math） | 避免浮點誤差，見 5.10 |
+| 數值運算 | brick/math | 避免浮點誤差，見 5.10。開發環境的 PHP 未安裝 bcmath，而 Laravel 已相依 brick/math（純 PHP 即可運作），故不依賴 bcmath 擴充 |
 | Excel | phpoffice/phpspreadsheet | 匯入與匯出 |
 | PDF | mPDF（內嵌 Noto Sans TC） | 中文字型支援較穩；候選為 Dompdf，動工時以實測選定 |
 | Word | phpoffice/phpword | 永續報告氣候章節 |
@@ -221,11 +221,11 @@ docker/ docs/
 - 連線啟用外鍵；`journal_mode=WAL`、`busy_timeout` 約 5 秒、`synchronous=NORMAL`（依所用 Laravel 版本的設定方式為準）。
 - 資料庫檔與備份放在網站根目錄之外，權限僅限應用程式帳號。
 - **小數精度**：SQLite 沒有真正的定點小數，宣告 decimal 的欄位實際以浮點儲存。因此：
-  1. 所有計算在 PHP 以 bcmath 進行；
+  1. 所有計算在 PHP 以 brick/math 進行；
   2. 凍結用的 `calc_snapshot` JSON 存十進位字串（不受浮點影響），為稽核依據；
   3. 欄位值用於查詢與彙總，彙總結果與快照比對由測試驗證；
   4. 遷移到 MySQL 後 decimal 為精確儲存，不需要改程式。
-- 備份：每日以 SQLite 的線上備份機制產生一致性副本，連同 `storage/app/private` 打包保留 30 天，每月做一次還原演練。
+- 備份：每日以 `VACUUM INTO` 產生一致性副本（開發環境沒有 sqlite3 命令列工具，改在 PHP 內執行），連同 `storage/app/private` 打包保留 30 天，每月做一次還原演練。
 
 ## 6. 核心規則
 
