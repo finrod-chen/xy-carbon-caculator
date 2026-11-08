@@ -152,7 +152,7 @@ docker/ docs/
 
 | 表 | 欄位 | 說明 |
 |---|---|---|
-| `activity_records` *SD* | inventory_year_id→, reporting_period_id→, emission_source_id→, emission_factor_id→, department_id→, entered_by→, quantity(decimal 24,6), unit, quantity_factor_unit(decimal 24,6), data_quality(measured/invoiced/calculated/estimated/spend_based), is_estimate, estimation_method?, vendor_or_note?, scope2_method?(location/market), status(draft/submitted/returned/approved/locked), submitted_at?, reviewed_by?→, reviewed_at?, review_note?, locked_at?, version(預設 1), supersedes_id?→(自己), 以及凍結欄位（見下） | 一筆代表一張帳單或一次數據；同月同來源可多筆 |
+| `activity_records` *SD* | billing_period_start?, billing_period_end?, allocation_method?(none/by_days), inventory_year_id→, reporting_period_id→, emission_source_id→, emission_factor_id→, department_id→, entered_by→, quantity(decimal 24,6), unit, quantity_factor_unit(decimal 24,6), data_quality(measured/invoiced/calculated/estimated/spend_based), is_estimate, estimation_method?, vendor_or_note?, scope2_method?(location/market), status(draft/submitted/returned/approved/locked), submitted_at?, reviewed_by?→, reviewed_at?, review_note?, locked_at?, version(預設 1), supersedes_id?→(自己), 以及凍結欄位（見下） | 一筆代表一張帳單或一次數據；同月同來源可多筆 |
 | `activity_records` 凍結欄位 | calc_factor_value, calc_factor_label, calc_factor_reference_code, calc_gwp_set_id, calc_gwp_label, calc_co2e_kg(decimal 28,8), calc_co2e_market_kg?, calc_biogenic_co2_kg?, calc_energy_gj?, calc_snapshot(json), calculated_at | 送審時寫入並計算；`calc_snapshot` 存十進位字串，為稽核依據 |
 | `attachments` *SD* | attachable_type, attachable_id, disk, path, original_name, mime, size_bytes, sha256, description?, uploaded_by→ | 多型；佐證檔、匯入檔、報告檔；以雜湊驗證完整性 |
 | `review_events` | record_id→, user_id→, action(submit/return/approve/unlock/comment), note?, created_at | 審核動作與意見，一筆資料的流程歷史 |
@@ -213,7 +213,7 @@ docker/ docs/
 |---|---|---|
 | `report_versions` | type(iso14064/sustainability_climate/sbti_package/assurance_pack), inventory_year_id→, version_no, status(draft/approved/published), snapshot_attachment_id→, snapshot_sha256, created_by→, approved_by?→, approved_at?, note? | 引用的數字來自凍結快照；任何修改產生新版本 |
 | `audit_logs` | user_id?→, auditable_type?, auditable_id?, event(created/updated/deleted/status_changed/login/export/unlock…), old_values(json)?, new_values(json)?, ip?, user_agent?, prev_hash?, row_hash, created_at | 只增不改；雜湊鏈提供防竄改證據 |
-| `settings` | key(unique), value(json), type, updated_by?→ | 異常門檻、提醒時程、捨入規則等 |
+| `settings` | key(unique), value(json), type, updated_by?→ | 異常門檻、提醒時程（送審截止日、審核截止日、鎖定日、提醒天數）、捨入規則等 |
 | Laravel 內建 | `sessions`、`cache`、`jobs`、`failed_jobs`、`password_reset_tokens`、`notifications` | 使用資料庫驅動 |
 
 ### 5.10 SQLite 設定重點
@@ -350,6 +350,7 @@ CI（GitHub Actions）：Pint、Larastan、Pest（SQLite）、Pest（MySQL 服�
 
 ## 13. 待確認事項
 
+0. **計費期間分攤**：帳單可能是雙月或跨月計費期。`activity_records` 新增計費起訖日與分攤方式，採「按天分攤」時由系統拆成各月份的衍生紀錄（衍生紀錄不可獨立修改，只能改原始帳單）。實際是否需要，待廠務確認帳單類型。
 1. Laravel 與相依套件版本，於專案初始化時核對最新穩定版與 PHP 8.3 相容性。
 2. mPDF 與 Dompdf 的中文排版實測後選定。
 3. 係數 CSV 的第一版內容由誰負責整理與核對（對應 PLAN.md 的係數維護者）。
