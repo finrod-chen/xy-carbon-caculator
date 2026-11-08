@@ -220,7 +220,7 @@
 
 ## 6. 技術架構
 
-> 專案目錄結構、資料表欄位、狀態機、計算規格與測試策略的細部設計，見 [TECH_DESIGN.md](TECH_DESIGN.md)。
+> 專案目錄結構、資料表欄位、狀態機、計算規格與測試策略的細部設計，見 [TECH_DESIGN.md](TECH_DESIGN.md)。介面規格與頁面線稿見 [UI_DESIGN.md](UI_DESIGN.md) 與 [wireframes/index.html](wireframes/index.html)。
 
 - 後端：Laravel（登入、權限、CSRF、遷移、驗證皆用框架內建）
 - 資料庫：SQLite（WAL），遷移檔管理結構；避免 SQLite 專屬語法
