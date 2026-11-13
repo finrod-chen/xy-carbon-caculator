@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * 閒置超時（WP0.4）：超過 carbon.auth.session_timeout_minutes 就登出。
  * 系統不提供「記住我」，登入狀態最長就是這個上限。
+ * 時間以 Unix 秒數存放，避免時區與 Carbon 版本的差異。
  */
 class EnforceIdleTimeout
 {
@@ -18,7 +19,7 @@ class EnforceIdleTimeout
         $minutes = (int) config('carbon.auth.session_timeout_minutes', 120);
         $lastSeen = $request->session()->get('last_activity_at');
 
-        if (is_string($lastSeen) && now()->diffInMinutes($lastSeen) >= $minutes) {
+        if (is_numeric($lastSeen) && (time() - (int) $lastSeen) >= $minutes * 60) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -28,7 +29,7 @@ class EnforceIdleTimeout
             ]);
         }
 
-        $request->session()->put('last_activity_at', now()->toIso8601String());
+        $request->session()->put('last_activity_at', time());
 
         return $next($request);
     }
