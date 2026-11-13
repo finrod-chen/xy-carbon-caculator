@@ -49,7 +49,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->enum('role', ['contributor', 'dept_head', 'reviewer', 'manager', 'esg', 'admin', 'auditor'])
                 ->default('contributor');
-            $table->foreignId('department_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('department_id')->nullable()->constrained()->restrictOnDelete();
             $table->boolean('is_active')->default(true);
             $table->boolean('must_change_password')->default(true);
             $table->timestamp('last_login_at')->nullable();
