@@ -66,11 +66,16 @@ class AuthorizationTest extends TestCase
         $admin = $this->makeUser(Role::Admin);
         $target = $this->makeUser(Role::Contributor);
 
-        $this->actingAs($admin)->post('/admin/users', [
+        $response = $this->actingAs($admin)->post('/admin/users', [
             'name' => '新同事',
             'email' => 'colleague@example.com',
             'role' => Role::Reviewer->value,
-        ])->assertRedirect(route('admin.users.index'));
+        ]);
+
+        $this->assertStringStartsWith(
+            '/admin/users/temp-password/',
+            (string) $response->headers->get('Location'),
+        );
 
         $this->assertDatabaseHas('users', [
             'email' => 'colleague@example.com',
