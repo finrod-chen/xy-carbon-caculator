@@ -103,8 +103,8 @@ class AuthenticationTest extends TestCase
 
         $this->actingAs($user)->put('/password', [
             'current_password' => 'password123456',
-            'password' => 'newpassword123456',
-            'password_confirmation' => 'newpassword123456',
+            'password' => 'Vz7#tqwmKpr9LduX',
+            'password_confirmation' => 'Vz7#tqwmKpr9LduX',
         ])->assertRedirect(route('home'));
 
         $this->assertFalse($user->fresh()->must_change_password);
