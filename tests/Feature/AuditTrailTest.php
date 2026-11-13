@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Enums\Role;
-use App\Models\AuditLog;
 use App\Models\User;
 use App\Services\Audit\AuditWriter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
