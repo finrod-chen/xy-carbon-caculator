@@ -12,6 +12,12 @@
 
   <p><span class="tag off">內容待廠務確認</span></p>
 
+  @if ($page->missingReferences !== [])
+    <div class="alert error" role="alert">
+      這一頁引用了尚未建檔的參考資料：{{ implode('、', $page->missingReferences) }}。請通知 ESG 窗口補齊編號，內容以正式公告為準。
+    </div>
+  @endif
+
   @if ($hasUnverified)
     <div class="alert error" role="alert">
       這一頁引用到尚未核對原文或超過 12 個月未複核的資料，數字與規則以正式公告為準。
