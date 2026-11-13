@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnforceIdleTimeout;
 use App\Http\Middleware\EnsureAccountIsActive;
 use App\Http\Middleware\EnsurePasswordIsChanged;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         // 不在這裡連線，避免 artisan 於無資料庫檔時（例如 composer 的 package:discover）失敗。
         Route::aliasMiddleware('active', EnsureAccountIsActive::class);
         Route::aliasMiddleware('password.changed', EnsurePasswordIsChanged::class);
+        Route::aliasMiddleware('session.idle', EnforceIdleTimeout::class);
 
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
