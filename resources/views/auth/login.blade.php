@@ -12,9 +12,7 @@
       <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="username">
       <label for="password">密碼</label>
       <input id="password" name="password" type="password" required autocomplete="current-password">
-      <div class="row" style="margin-top:12px">
-        <label style="margin:0"><input type="checkbox" name="remember" value="1"> 記住我</label>
-      </div>
+      <p class="hint" style="margin-top:12px">基於資安政策不提供「記住我」；閒置 {{ (int) config('carbon.auth.session_timeout_minutes', 120) }} 分鐘會自動登出。</p>
       <button class="btn" type="submit" style="margin-top:16px;width:100%">登入</button>
     </form>
   </div>
