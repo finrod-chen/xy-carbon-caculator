@@ -1,7 +1,10 @@
 name: format
 
-# 需要在雲端執行 Pint 自動排版時手動觸發：把修正直接提交回觸發分支。
+# 需要在雲端執行 Pint 自動排版時：編輯本檔任一註解即可觸發，
+# 或手動 dispatch（需先讓本檔存在於預設分支）。把修正提交回觸發分支。
 on:
+  push:
+    paths: ['.github/workflows/format.yml']
   workflow_dispatch:
 
 permissions:
