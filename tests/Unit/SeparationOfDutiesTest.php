@@ -3,7 +3,6 @@
 namespace Tests\Unit;
 
 use App\Support\SeparationOfDuties;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
