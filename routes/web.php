@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Learn\PageController;
 use Illuminate\Support\Facades\Route;
 
 // 沒有公開註冊：帳號一律由管理員建立（PHASE0 WP0.4）
@@ -23,6 +24,11 @@ Route::middleware(['auth', 'active'])->group(function () {
 
 Route::middleware(['auth', 'active', 'password.changed'])->group(function () {
     Route::get('/', HomeController::class)->name('home');
+
+    // 說明頁與參考資料（WP0.7）
+    Route::get('learn', [PageController::class, 'index'])->name('learn.index');
+    Route::get('learn/references', [PageController::class, 'references'])->name('learn.references');
+    Route::get('learn/{slug}', [PageController::class, 'show'])->where('slug', '.*')->name('learn.show');
 
     Route::prefix('admin')->name('admin.')->middleware('can:viewAny,App\Models\User')->group(function () {
         Route::get('users', [UserController::class, 'index'])->name('users.index');
