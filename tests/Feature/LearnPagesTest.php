@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Support\Content\PageRepository;
 use Database\Seeders\ReferenceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use RuntimeException;
 use Tests\TestCase;
 
 class LearnPagesTest extends TestCase
@@ -67,14 +66,22 @@ class LearnPagesTest extends TestCase
             ->assertSee('待核對');
     }
 
-    public function test_unknown_reference_code_fails_at_build_time(): void
+    public function test_unknown_reference_code_renders_a_warning_instead_of_failing(): void
     {
         $path = resource_path('content/__test-bad-reference.md');
         file_put_contents($path, "---\ntitle: 壞掉的頁面\norder: 999\n---\n\n請見 [R-99]。\n");
 
         try {
-            $this->expectException(RuntimeException::class);
-            app(PageRepository::class)->all();
+            $pages = app(PageRepository::class)->all();
+
+            $this->assertArrayHasKey('__test-bad-reference', $pages);
+            $this->assertSame(['R-99'], $pages['__test-bad-reference']->missingReferences);
+
+            $this->actingAs($this->user())
+                ->get('/learn/__test-bad-reference')
+                ->assertOk()
+                ->assertSee('R-99', false)
+                ->assertSee('尚未建檔的參考資料');
         } finally {
             @unlink($path);
         }
