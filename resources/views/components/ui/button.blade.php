@@ -1,0 +1,21 @@
+@props([
+    'variant' => 'primary',
+    'href' => null,
+    'type' => 'button',
+])
+
+@php
+    $base = 'btn';
+    $variants = [
+        'primary' => 'btn',
+        'ghost' => 'btn ghost',
+        'danger' => 'btn danger',
+    ];
+    $class = $variants[$variant] ?? $base;
+@endphp
+
+@if ($href)
+    <a href="{{ $href }}" {{ $attributes->merge(['class' => $class]) }}>{{ $slot }}</a>
+@else
+    <button type="{{ $type }}" {{ $attributes->merge(['class' => $class]) }}>{{ $slot }}</button>
+@endif
