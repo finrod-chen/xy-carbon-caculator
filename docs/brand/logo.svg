@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 48" width="250" height="48" role="img" aria-label="喜躍生醫 碳盤查">
+  <title>喜躍生醫 碳盤查（暫用標誌）</title>
+  <g>
+    <rect width="48" height="48" rx="11" fill="#2C7A4B"/>
+    <path d="M13 35 C12 21 22 11 37 11 C37 27 28 37 13 35 Z" fill="#FFFFFF"/>
+    <path d="M16 32 L31 17" stroke="#2C7A4B" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+    <circle cx="13" cy="13" r="3" fill="#E6F2EA"/>
+  </g>
+  <text x="60" y="30" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif" font-size="24" font-weight="600" fill="#1D2A22" letter-spacing="1">喜躍生醫</text>
+  <text x="60" y="44" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',system-ui,sans-serif" font-size="11" fill="#5B6A61" letter-spacing="3">碳盤查系統</text>
+</svg>

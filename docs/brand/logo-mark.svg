@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="喜躍生醫碳盤查標誌">
+  <title>喜躍生醫碳盤查標誌（暫用）</title>
+  <rect width="48" height="48" rx="11" fill="#2C7A4B"/>
+  <!-- 葉片：代表自然與減碳 -->
+  <path d="M13 35 C12 21 22 11 37 11 C37 27 28 37 13 35 Z" fill="#FFFFFF"/>
+  <!-- 葉脈：同時是向上躍升的斜線 -->
+  <path d="M16 32 L31 17" stroke="#2C7A4B" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <!-- 躍起的亮點：代表「喜躍」 -->
+  <circle cx="13" cy="13" r="3" fill="#E6F2EA"/>
+</svg>
