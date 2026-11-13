@@ -7,6 +7,7 @@ use App\Models\Reference;
 use App\Support\Content\Page;
 use App\Support\Content\PageRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 /** 說明頁與參考資料頁（PHASE0 WP0.7、WP0.8 的唯讀部分）。 */
@@ -46,8 +47,8 @@ class PageController extends Controller
         ]);
     }
 
-    /** @return \Illuminate\Support\Collection<int, Reference> */
-    private function referencesFor(Page $page): \Illuminate\Support\Collection
+    /** @return Collection<int, Reference> */
+    private function referencesFor(Page $page): Collection
     {
         if ($page->referenceCodes === []) {
             return collect();
