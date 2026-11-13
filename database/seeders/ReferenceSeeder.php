@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\VerificationStatus;
 use App\Models\Reference;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 /**
@@ -41,7 +42,7 @@ class ReferenceSeeder extends Seeder
                 'purpose' => $purpose,
                 'verification_status' => $status,
                 'verified_on' => $verifiedOn,
-                'review_due_on' => $verifiedOn ? \Carbon\Carbon::parse($verifiedOn)->addYear() : null,
+                'review_due_on' => $verifiedOn ? Carbon::parse($verifiedOn)->addYear() : null,
                 'notes' => $notes,
             ]);
         }

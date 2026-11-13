@@ -47,7 +47,7 @@ class AuditWriter
             'ip_address' => $ip,
             'user_agent' => $userAgent,
             'prev_hash' => $prevHash,
-            'hash' => hash(config('carbon.audit.hash_algo', 'sha256'), ($prevHash ?? '') . $payload),
+            'hash' => hash(config('carbon.audit.hash_algo', 'sha256'), ($prevHash ?? '').$payload),
         ]);
     }
 
@@ -69,7 +69,7 @@ class AuditWriter
                 'occurred_at' => $log->occurred_at?->toIso8601String(),
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-            $expected = hash(config('carbon.audit.hash_algo', 'sha256'), ($prev ?? '') . $payload);
+            $expected = hash(config('carbon.audit.hash_algo', 'sha256'), ($prev ?? '').$payload);
 
             if ($log->prev_hash !== $prev || ! hash_equals($expected, $log->hash)) {
                 return $log->id;
