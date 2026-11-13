@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,15 +14,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // WP0.2：SQLite 以 WAL、外鍵、busy_timeout 運作
-        if (config('database.default') === 'sqlite') {
-            $pdo = DB::connection()->getPdo();
-            $pdo->exec('PRAGMA journal_mode = WAL');
-            $pdo->exec('PRAGMA busy_timeout = 5000');
-            $pdo->exec('PRAGMA synchronous = NORMAL');
-            $pdo->exec('PRAGMA foreign_keys = ON');
-        }
-
+        // SQLite 的 WAL、busy_timeout、外鍵設定在 config/database.php 的 sqlite 區塊，
+        // 不在這裡連線，避免 artisan 於無資料庫檔時（例如 composer 的 package:discover）失敗。
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
