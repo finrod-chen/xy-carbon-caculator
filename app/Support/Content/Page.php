@@ -7,6 +7,7 @@ final class Page
 {
     /**
      * @param  array<int, string>  $referenceCodes
+     * @param  array<int, string>  $missingReferences
      * @param  array<int, array{id: string, text: string}>  $headings
      */
     public function __construct(
@@ -18,5 +19,6 @@ final class Page
         public readonly array $referenceCodes,
         public readonly array $headings,
         public readonly string $html,
+        public readonly array $missingReferences = [],
     ) {}
 }
