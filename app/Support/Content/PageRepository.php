@@ -6,7 +6,6 @@ use App\Models\Reference;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
-use RuntimeException;
 
 /**
  * 說明頁來源：resources/content/**\/*.md（PHASE0 WP0.7）。
@@ -40,6 +39,7 @@ final class PageRepository
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
         $converter = $this->converter();
         $pages = [];
+        $sources = [];
 
         foreach ($files as $file) {
             if (! $file->isFile() || $file->getExtension() !== 'md') {
@@ -52,48 +52,64 @@ final class PageRepository
             [$front, $markdown] = $this->splitFrontMatter((string) file_get_contents($file->getPathname()));
             [$html, $headings] = $this->render($converter, $markdown);
 
+            $sources[$slug] = [
+                'front' => $front,
+                'markdown' => $markdown,
+                'html' => $html,
+                'headings' => $headings,
+            ];
+        }
+
+        $known = $this->knownReferenceCodes($sources);
+
+        foreach ($sources as $slug => $source) {
+            $codes = $this->referenceCodes($source['markdown']);
+
             $pages[$slug] = new Page(
                 slug: $slug,
-                title: (string) ($front['title'] ?? $slug),
-                order: (int) ($front['order'] ?? 99),
-                owner: $front['owner'] ?? null,
-                updated: $front['updated'] ?? null,
-                referenceCodes: $this->referenceCodes($markdown),
-                headings: $headings,
-                html: $html,
+                title: (string) ($source['front']['title'] ?? $slug),
+                order: (int) ($source['front']['order'] ?? 99),
+                owner: $source['front']['owner'] ?? null,
+                updated: $source['front']['updated'] ?? null,
+                referenceCodes: $codes,
+                missingReferences: array_values(array_diff($codes, $known)),
+                headings: $source['headings'],
+                html: $source['html'],
             );
         }
 
-        $this->assertReferencesExist($pages);
         uasort($pages, fn (Page $a, Page $b) => $a->order <=> $b->order ?: strcmp($a->title, $b->title));
 
         return $pages;
     }
 
     /**
-     * 引用不存在的 [R-xx] 在建置或測試階段就要報錯，不能拖到上線後。
+     * 內容引用到不存在的 [R-xx] 時，頁面仍要開得起來，只顯示「待補」提示；
+     * 真正的把關放在 CI（tests/Feature/ContentReferenceIntegrityTest.php）。
      *
-     * @param  array<string, Page>  $pages
+     * @param  array<string, array{front: array<string, mixed>, markdown: string, html: string, headings: array<int, array{id: string, text: string}>}>  $sources
+     * @return array<int, string>
      */
-    private function assertReferencesExist(array $pages): void
+    private function knownReferenceCodes(array $sources): array
     {
         $codes = [];
 
-        foreach ($pages as $page) {
-            foreach ($page->referenceCodes as $code) {
+        foreach ($sources as $source) {
+            foreach ($this->referenceCodes($source['markdown']) as $code) {
                 $codes[$code] = true;
             }
         }
 
         if ($codes === []) {
-            return;
+            return [];
         }
 
-        $known = Reference::query()->whereIn('code', array_keys($codes))->pluck('code')->all();
-        $missing = array_diff(array_keys($codes), $known);
+        try {
+            return Reference::query()->whereIn('code', array_keys($codes))->pluck('code')->all();
+        } catch (\Throwable $e) {
+            report($e);
 
-        if ($missing !== []) {
-            throw new RuntimeException('說明頁引用了不存在的參考資料：'.implode('、', $missing));
+            return [];
         }
     }
 
