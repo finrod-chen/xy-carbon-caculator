@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [phase0-foundation, phase0-auth, phase0-learn, phase0-ui]
+    branches: [phase0-foundation, phase0-auth, phase0-learn, phase0-ui, phase0-review-fixes]
     paths-ignore: ['docs/**']
   pull_request:
 
