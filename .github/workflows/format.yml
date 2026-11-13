@@ -2,6 +2,7 @@ name: format
 
 # 需要在雲端執行 Pint 自動排版時：編輯本檔任一註解即可觸發，
 # 或手動 dispatch（需先讓本檔存在於預設分支）。把修正提交回觸發分支。
+# 觸發紀錄：2026-11-13T00:37:41.626Z
 on:
   push:
     paths: ['.github/workflows/format.yml']
