@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\TemporaryPasswordController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -18,12 +19,12 @@ Route::post('logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-Route::middleware(['auth', 'active'])->group(function () {
+Route::middleware(['auth', 'active', 'session.idle'])->group(function () {
     Route::get('password', [PasswordController::class, 'edit'])->name('password.edit');
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 });
 
-Route::middleware(['auth', 'active', 'password.changed'])->group(function () {
+Route::middleware(['auth', 'active', 'password.changed', 'session.idle'])->group(function () {
     Route::get('/', HomeController::class)->name('home');
 
     // 說明頁與參考資料（WP0.7）
@@ -36,6 +37,8 @@ Route::middleware(['auth', 'active', 'password.changed'])->group(function () {
 
     Route::prefix('admin')->name('admin.')->middleware('can:viewAny,App\Models\User')->group(function () {
         Route::get('users', [UserController::class, 'index'])->name('users.index');
+        // 一次性臨時密碼頁面（token 用完即失效）
+        Route::get('users/temp-password/{token}', [TemporaryPasswordController::class, 'show'])->name('users.temp-password');
         Route::get('users/create', [UserController::class, 'create'])->middleware('can:create,App\Models\User')->name('users.create');
         Route::post('users', [UserController::class, 'store'])->middleware('can:create,App\Models\User')->name('users.store');
         Route::get('users/{user}/edit', [UserController::class, 'edit'])->middleware('can:update,user')->name('users.edit');
