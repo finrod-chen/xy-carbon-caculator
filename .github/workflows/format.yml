@@ -1,0 +1,30 @@
+name: format
+
+# 只保留手動觸發：需要時到 Actions 頁面按 Run workflow。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: ./vendor/bin/pint
+      - name: Commit formatting fixes
+        run: |
+          git config user.name "carbon-format"
+          git config user.email "carbon-format@users.noreply.github.com"
+          if git diff --quiet; then echo "no changes"; exit 0; fi
+          git add -A
+          git commit -m "style: 以 Pint 自動排版"
+          git push
